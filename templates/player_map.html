@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🗺️ Zomboid Player Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}">
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #a8a69c;
+    }
+    #map {
+      height: 100vh;
+      width: 100vw;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    const imageWidth = 2280;
+    const imageHeight = 2395;
+    const tileSize = 256;
+    const zoomLevel = 4;
+
+    const map = L.map('map', {
+      crs: L.CRS.Simple,
+      minZoom: 2,
+      maxZoom: 6,
+      zoomControl: true,
+      maxBoundsViscosity: 1.0,
+    });
+
+    const topLeft = map.unproject([0, 0], zoomLevel);
+    const bottomRight = map.unproject([imageWidth, imageHeight], zoomLevel);
+    const bounds = L.latLngBounds(bottomRight, topLeft);
+
+    L.tileLayer('/static/img/tiles/{z}/{x}/{y}.png', {
+      tileSize: tileSize,
+      noWrap: true,
+      bounds: bounds,
+      minZoom: 2,
+      maxZoom: 6,
+    }).addTo(map);
+
+    map.setMaxBounds(bounds);
+    map.setView([100, 100], zoomLevel); // Initial logical center
+
+    // 💥 Forced translate3d center adjustment
+    window.addEventListener("load", () => {
+      function forceTileCenter(offsetX = 24, offsetY = -350.931, retries = 10) {
+        const tilePane = document.querySelector(".leaflet-tile-pane");
+        if (!tilePane) return console.warn("Tile pane not found.");
+
+        const all = tilePane.querySelectorAll("*");
+        for (let el of all) {
+          const style = window.getComputedStyle(el);
+          if (style.transform.includes("translate3d")) {
+            el.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0px)`;
+            console.log("🎯 Forced translate3d:", el.style.transform);
+            return;
+          }
+        }
+
+        if (retries > 0) {
+          setTimeout(() => forceTileCenter(offsetX, offsetY, retries - 1), 200);
+        } else {
+          console.warn("❌ Could not find transformable element.");
+        }
+      }
+
+      setTimeout(() => {
+        forceTileCenter(); // fire after short delay
+      }, 600);
+    });
+  </script>
+  <script>
+    async function fetchPlayersAndUpdateMap() {
+      const response = await fetch("/api/player-locations");
+      const players = await response.json();
+    
+      // Clear existing markers
+      window.playerMarkers?.forEach(m => m.remove());
+      window.playerMarkers = [];
+    
+      players.forEach(player => {
+        const { x, y, name, username, time } = player;
+        const latLng = map.unproject([x, y], 4);  // Assumes 1 tile = 1 pixel scale
+        const marker = L.marker(latLng).addTo(map)
+          .bindPopup(`<b>${name}</b><br>@${username}<br>🕒 ${time}`);
+        window.playerMarkers.push(marker);
+      });
+    }
+    
+    // Poll every 10 seconds
+    setInterval(fetchPlayersAndUpdateMap, 10000);
+    fetchPlayersAndUpdateMap();  // On load
+  </script>    
+</body>
+</html>

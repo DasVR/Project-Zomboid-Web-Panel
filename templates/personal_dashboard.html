@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Zomboid Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8 min-h-screen">
+
+  <div class="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-md">
+    <!-- Steam Profile -->
+    <div class="flex items-center gap-6 border-b border-gray-600 pb-4 mb-4">
+      {% if steam.avatar %}
+        <img src="{{ steam.avatar }}" alt="Avatar" class="w-24 h-24 rounded shadow">
+      {% else %}
+        <div class="w-24 h-24 bg-gray-700 rounded flex items-center justify-center text-2xl text-gray-400">?</div>
+      {% endif %}
+      <div>
+        <h1 class="text-2xl font-bold">{{ steam.name or "Unnamed" }}</h1>
+        <p class="text-gray-400 text-sm">Steam ID: {{ steam.steam_id or "Not linked" }}</p>
+      </div>
+    </div>
+
+    <!-- Zomboid Identity -->
+    <div class="mb-6">
+      <h2 class="text-xl font-semibold mb-2 text-green-400">🧍 Zomboid Identity</h2>
+      <pre class="bg-black text-green-300 p-3 rounded text-sm">{{ identity or "No data available" }}</pre>
+    </div>
+
+    <!-- App Username -->
+    <div class="mb-6">
+      <h2 class="text-xl font-semibold mb-2 text-blue-400">👤 Account Username</h2>
+      <div class="bg-gray-700 px-4 py-2 rounded text-white">{{ username }}</div>
+    </div>
+
+    <a href="{{ url_for('dashboard') }}" class="text-blue-300 hover:underline">← Back to Dashboard</a>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+DEBUG: General     , 1743917235456> 462,519,538> LoggerManager.init                  > Initializing...
+LOG  : General     , 1743917235696> 462,519,756> cachedir set to "C:\Users\airfr\Zomboid"
+LOG  : General     , 1743917235900> 462,519,960> version=41.78.16 demo=false
+LOG  : General     , 1743917235901> 462,519,960> revision= date= time=
+LOG  : General     , 1743917235970> 462,520,029> unknown option "0"
+LOG  : General     , 1743917235971> 462,520,030> server name is "servertest"
+LOG  : General     , 1743917235971> 462,520,031> checking server WorldVersion in map_t.bin
+LOG  : General     , 1743917235989> 462,520,049> Loading networking libraries...
+LOG  : General     , 1743917235990> 462,520,050> Loading steam_api64...
+LOG  : General     , 1743917235992> 462,520,052> Loading RakNet64...
+LOG  : General     , 1743917236057> 462,520,117> Loading ZNetJNI64...
+LOG  : Network     , 1743917236242> 462,520,302> [06-04-25 01:27:16.242] > ZNet: SetLogLevel 2
+LOG  : Network     , 1743917236265> 462,520,324> [06-04-25 01:27:16.265] > ZNet: SteamAPI initialised successfully
+LOG  : General     , 1743917236266> 462,520,325> SteamUtils initialised successfully
+LOG  : General     , 1743917245309> 462,529,368> translator: language is EN
+LOG  : General     , 1743917245882> 462,529,942> LightingFPS set to 15
+LOG  : General     , 1743917245950> 462,530,009> reading C:\Users\airfr\Zomboid\Server\servertest.ini
+LOG  : General     , 1743917245952> 462,530,012> writing C:\Users\airfr\Zomboid\Server\servertest.ini
+LOG  : Network     , 1743917245997> 462,530,057> [06-04-25 01:27:25.997] > ZNet: SZombienet -> SZombienet: Init
+LOG  : Network     , 1743917246496> 462,530,556> [06-04-25 01:27:26.496] > ZNet: SteamGameServer seems to be initialized
+LOG  : Network     , 1743917246498> 462,530,558> [06-04-25 01:27:26.498] > ZNet: SZombienet -> SSteamSDK: SetMaxPlayerCount
+LOG  : General     , 1743917246531> 462,530,590> Waiting for response from Steam servers
+LOG  : Network     , 1743917247950> 462,532,010> [06-04-25 01:27:27.950] > ZNet: SSteamSDK -> SZombienet: OnSteamServersConnected
+LOG  : Network     , 1743917247951> 462,532,011> [06-04-25 01:27:27.951] > ZNet: OnSteamServersConnected
+LOG  : Network     , 1743917247952> 462,532,011> [06-04-25 01:27:27.952] > ZNet: SZombienet -> SSteamSDK: SetMaxPlayerCount
+LOG  : Network     , 1743917247952> 462,532,012> [06-04-25 01:27:27.952] > ZNet: Public IP: 47.201.198.221
+LOG  : Network     , 1743917248135> 462,532,194> [06-04-25 01:27:28.134] > ZNet: SSteamSDK -> SZombienet: OnPolicyResponse
+LOG  : Network     , 1743917248137> 462,532,196> [06-04-25 01:27:28.136] > ZNet: OnPolicyResponse
+LOG  : Network     , 1743917248139> 462,532,198> [06-04-25 01:27:28.138] > ZNet: SZombienet -> SSteamSDK: BSecure
+LOG  : Network     , 1743917248141> 462,532,201> [06-04-25 01:27:28.141] > ZNet: Zomboid Server is VAC Secure
+LOG  : General     , 1743917248349> 462,532,409> Workshop: onItemQueryCompleted handle=1 numResult=149
+LOG  : General     , 1743917248395> 462,532,455> Workshop: GetItemState()=Installed ID=2799152995
+LOG  : General     , 1743917248401> 462,532,460> Workshop: item state CheckItemState -> Ready ID=2799152995
+LOG  : General     , 1743917248402> 462,532,461> Workshop: GetItemState()=Installed ID=2807001835
+LOG  : General     , 1743917248402> 462,532,461> Workshop: item state CheckItemState -> Ready ID=2807001835
+LOG  : General     , 1743917248402> 462,532,462> Workshop: GetItemState()=Installed ID=2026187681
+LOG  : General     , 1743917248402> 462,532,462> Workshop: item state CheckItemState -> Ready ID=2026187681
+LOG  : General     , 1743917248403> 462,532,463> Workshop: GetItemState()=Installed ID=3394109542
+LOG  : General     , 1743917248403> 462,532,463> Workshop: item state CheckItemState -> Ready ID=3394109542
+LOG  : General     , 1743917248404> 462,532,464> Workshop: GetItemState()=Installed ID=2588598892
+LOG  : General     , 1743917248404> 462,532,464> Workshop: item state CheckItemState -> Ready ID=2588598892

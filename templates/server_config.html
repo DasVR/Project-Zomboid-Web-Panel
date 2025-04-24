@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>⚙️ Server Config Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+
+<div class="p-4 bg-gray-800 shadow-md flex justify-between items-center sticky top-0 z-10">
+  <h1 class="text-xl font-bold">🧾 Config Editor</h1>
+  <button id="save-btn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded shadow">💾 Save</button>
+</div>
+
+<div class="max-w-6xl mx-auto p-6 space-y-10">
+  <div>
+    <h2 class="text-lg font-semibold text-green-400 mb-4">✅ Boolean Toggles</h2>
+    <div id="booleans" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </div>
+  <div>
+    <h2 class="text-lg font-semibold text-yellow-400 mb-4">🔢 Numeric Settings</h2>
+    <div id="sliders" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </div>
+  <div>
+    <h2 class="text-lg font-semibold text-blue-400 mb-4">💬 Text & Other</h2>
+    <div id="text" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </div>
+</div>
+
+<script>
+const config = {{ config_values.config|tojson }};
+const descriptions = {{ config_values.descriptions|tojson }};
+const ranges = {{ config_values.ranges|tojson }};
+
+function createField(key, value, description) {
+  let html = `<div class="mb-2"><p class="text-xs text-gray-400 mb-1">${description || ""}</p>`;
+
+  if (value === "true" || value === "false") {
+    const checked = value === "true" ? "checked" : "";
+    html += `
+      <label class="inline-flex items-center gap-2">
+        <input type="checkbox" name="${key}" ${checked}
+          class="form-checkbox h-5 w-5 text-green-500 rounded bg-gray-800 border-gray-600">
+        <span class="text-sm">${key}</span>
+      </label>`;
+  } else if (!isNaN(value) && value.includes(".")) {
+    // Look up the range for this key if available
+    let min = 0, max = 100;
+    if (ranges[key]) {
+      [min, max] = ranges[key];
+    }
+    html += `
+      <label class="block text-sm font-semibold mb-1">${key}</label>
+      <div class="flex items-center gap-2">
+        <input type="range" name="${key}" value="${value}" min="${min}" max="${max}" step="0.01"
+          oninput="this.nextElementSibling.innerText = this.value"
+          class="w-full h-2 rounded bg-gray-700 accent-yellow-400" />
+        <span class="text-yellow-300 text-sm">${value}</span>
+      </div>`;
+  } else {
+    html += `
+      <label class="block text-sm font-semibold mb-1">${key}</label>
+      <input type="text" name="${key}" value="${value}"
+        class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    `;
+  }
+
+  html += "</div>";
+  return html;
+}
+
+Object.entries(config).forEach(([key, value]) => {
+  const description = descriptions[key] || "";
+  const element = document.createElement("div");
+  element.innerHTML = createField(key, value, description);
+  
+  if (value === "true" || value === "false") {
+    document.getElementById("booleans").appendChild(element);
+  } else if (!isNaN(value) && value.includes(".")) {
+    document.getElementById("sliders").appendChild(element);
+  } else {
+    document.getElementById("text").appendChild(element);
+  }
+});
+</script>
+
+</body>
+</html>

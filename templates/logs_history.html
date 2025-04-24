@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🗃️ Logs History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-6">
+  <h1 class="text-xl font-bold mb-4">📚 Archived Server Logs</h1>
+  <ul class="space-y-2">
+    {% for log in logs %}
+      <li class="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
+        <div>
+          <span class="font-semibold">{{ log.filename }}</span>
+          <span class="text-sm text-gray-400">({{ log.lines }} lines)</span>
+        </div>
+        <a href="{{ url_for('download_archived_log', filename=log.filename) }}" class="text-blue-400 hover:underline">⬇️ Download</a>
+      </li>
+    {% endfor %}
+  </ul>  
+</body>
+</html>

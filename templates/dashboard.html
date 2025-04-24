@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zomboid Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+  <!-- Header -->
+ <div class="p-4 flex justify-between items-center bg-gray-800 shadow-md">
+  <h1 class="text-xl font-bold">🧠 Project Zomboid Admin Panel</h1>
+  <div class="flex gap-4">
+    <a href="{{ url_for('players_dashboard') }}" class="bg-pink-700 hover:bg-pink-600 text-white px-4 py-2 rounded">Players</a>
+    <a href="{{ url_for('config_page') }}" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded">Config</a>
+    <a href="{{ url_for('logs_history')}}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">Archives</a>
+    <a href="{{ url_for('player_map') }}" class="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded">Maps</a>
+    <a href="{{ url_for('logout') }}" class="bg-red-700 hover:bg-red-600 font-bold text-white px-4 py-2 rounded">Logout</a>
+    <a href="{{ url_for('link_steam') }}" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded">
+      🔗 Link Steam Account
+    </a>    
+  </div>
+</div>
+
+ <!-- Server Control -->
+<div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="bg-gray-800 p-4 rounded-lg shadow col-span-2">
+    <h2 class="text-lg font-semibold mb-2">Server Control</h2>
+    <p>Status: <span id="server-status" class="font-bold text-yellow-300">Checking...</span></p>
+    <form method="POST" action="/control" class="mt-4 flex gap-2 flex-wrap">
+      <button id="start-btn" name="action" value="start" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded">Start</button>
+      <button id="stop-btn" name="action" value="stop" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded">Stop</button>
+      <button id="restart-btn" name="action" value="restart" class="bg-yellow-500 hover:bg-yellow-400 px-4 py-2 rounded">Restart</button>
+      <button id="force-btn" name="action" value="force_stop" class="bg-red-900 hover:bg-red-700 px-4 py-2 rounded">💣 Force Stop</button>
+    </form>    
+  </div>
+
+  <!-- Stat Cards -->
+    <div class="bg-gray-800 p-4 rounded-lg shadow text-center">
+      <div class="text-blue-300 text-sm">⏱️ Uptime</div>
+      <div id="uptime" class="text-2xl font-bold">--s</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg shadow text-center">
+      <div class="text-purple-300 text-sm">🧍 Players</div>
+      <div id="players" class="text-2xl font-bold">--</div>
+    </div>
+  </div>
+
+  <!-- Live Charts -->
+
+  <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-gray-800 p-5 pb-8 rounded-lg shadow h-56">
+      <h2 class="text-sm font-semibold">📊 CPU Usage</h2>
+      <canvas id="cpuChart" class="w-full" height="180"></canvas> <!-- Set Height -->
+    </div>
+    <div class="bg-gray-800 p-5 pb-8 rounded-lg shadow h-56">
+      <h2 class="text-sm font-semibold">📊 RAM Usage</h2>
+      <canvas id="ramChart" class="w-full" height="180"></canvas> <!-- Set Height -->
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="p-4">
+    <div class="bg-gray-800 p-4 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-2">📡 Live Server Logs</h2>
+      <div id="log-output" class="bg-black text-green-400 font-mono text-sm p-2 rounded h-64 overflow-y-scroll whitespace-pre-wrap">
+        <em class="text-gray-400">[Waiting for server output...]</em>
+      </div>
+    </div>
+  </div>
+
+<!-- Footnote -->
+<div class="bg-gray-800 p-4 rounded-lg shadow col-span-1 md:col-span-2">
+  <h3 class="text-sm text-gray-400 mb-2">This website was made with ChatGPT, actually a lot! It helped me learn so much about coding and such so, I honestly did more than half myself so expect bugs!</h3>
+</div>
+
+  <!-- Scripts -->
+  <script>
+    const startBtn = document.getElementById("start-btn");
+    const stopBtn = document.getElementById("stop-btn");
+    const restartBtn = document.getElementById("restart-btn");
+  
+    function updateControlButtons(status) {
+      if (status === "starting") {
+        startBtn.disabled = true;
+        stopBtn.disabled = true;
+        restartBtn.disabled = true;
+  
+        [startBtn, stopBtn, restartBtn].forEach(btn =>
+          btn.classList.add("opacity-50", "cursor-not-allowed")
+        );
+      }
+      else if (status === "running") {
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        restartBtn.disabled = false;
+  
+        startBtn.classList.add("opacity-50", "cursor-not-allowed");
+        stopBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        restartBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      }
+      else if (status === "stopped") {
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        restartBtn.disabled = true;
+  
+        startBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        stopBtn.classList.add("opacity-50", "cursor-not-allowed");
+        restartBtn.classList.add("opacity-50", "cursor-not-allowed");
+      }
+    }
+  
+    function updateServerStatus() {
+  fetch("/server-status")
+    .then(res => res.json())
+    .then(data => {
+      const statusSpan = document.getElementById("server-status");
+      const startBtn = document.getElementById("start-btn");
+      const stopBtn = document.getElementById("stop-btn");
+      const restartBtn = document.getElementById("restart-btn");
+      const forceBtn = document.getElementById("force-btn");
+
+      const disable = (btn) => {
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+      };
+
+      const enable = (btn) => {
+        btn.disabled = false;
+        btn.classList.remove("opacity-50", "cursor-not-allowed");
+      };
+
+      if (data.status === "starting") {
+        statusSpan.textContent = "Starting...";
+        statusSpan.className = "font-bold text-yellow-400";
+
+        disable(startBtn);
+        disable(stopBtn);
+        disable(restartBtn);
+        enable(forceBtn);
+
+      } else if (data.status === "running") {
+        statusSpan.textContent = "Running";
+        statusSpan.className = "font-bold text-green-400";
+
+        disable(startBtn);
+        enable(stopBtn);
+        enable(restartBtn);
+        enable(forceBtn);
+
+      } else {
+        statusSpan.textContent = "Stopped";
+        statusSpan.className = "font-bold text-red-400";
+
+        enable(startBtn);
+        disable(stopBtn);
+        disable(restartBtn);
+        disable(forceBtn);
+      }
+    });
+}
+setInterval(updateServerStatus, 1000);
+updateServerStatus();
+  </script>     
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const logBox = document.getElementById("log-output");
+    const socket = io();
+
+    socket.on("connect", () => {
+      console.log("🟢 Connected to WebSocket");
+    });
+
+    socket.on("log_update", (data) => {
+      if (logBox) {
+        const line = document.createElement("div");
+        line.textContent = data.line;
+        logBox.appendChild(line);
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+    });
+  </script>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const cpuCanvas = document.getElementById("cpuChart");
+    const ramCanvas = document.getElementById("ramChart");
+
+    if (!cpuCanvas || !ramCanvas) {
+      console.warn("❌ One or more chart canvases missing.");
+      return;
+    }
+
+    const cpuCtx = cpuCanvas.getContext("2d");
+    const ramCtx = ramCanvas.getContext("2d");
+
+    const cpuChart = new Chart(cpuCtx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [{
+          label: "CPU %",
+          borderColor: "#3b82f6",
+          backgroundColor: "rgba(59,130,246,0.2)",
+          data: [],
+          tension: 0.2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: 100
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: "#ccc" }
+          }
+        }
+      }
+    });
+
+    const ramChart = new Chart(ramCtx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [{
+          label: "RAM %",
+          borderColor: "#a855f7",
+          backgroundColor: "rgba(168,85,247,0.2)",
+          data: [],
+          tension: 0.4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: 100
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: "#ccc" }
+          }
+        }
+      }
+    });
+
+    // 🧠 Pull stats every 2 seconds and update charts
+    async function updateCharts() {
+      try {
+        const res = await fetch("/stats");
+        const data = await res.json();
+        const now = new Date().toLocaleTimeString();
+
+        if (cpuChart.data.labels.length > 20) {
+          cpuChart.data.labels.shift();
+          cpuChart.data.datasets[0].data.shift();
+          ramChart.data.labels.shift();
+          ramChart.data.datasets[0].data.shift();
+        }
+
+        cpuChart.data.labels.push(now);
+        ramChart.data.labels.push(now);
+        cpuChart.data.datasets[0].data.push(data.cpu);
+        ramChart.data.datasets[0].data.push(data.ram);
+
+        cpuChart.update();
+        ramChart.update();
+      } catch (e) {
+        console.error("❌ Chart update error:", e);
+      }
+    }
+
+    setInterval(updateCharts, 2000);
+  });
+// 👥 Players & ⏱️ Uptime Text Refresh
+setInterval(async () => {
+  try {
+    const stats = await (await fetch("/stats")).json();
+    const players = await (await fetch("/players")).json();
+
+    document.getElementById("uptime").textContent = Math.floor(stats.uptime) + "s";
+    document.getElementById("players").textContent = players.players.length;
+  } catch (e) {
+    console.warn("⚠️ Failed to update uptime/players", e);
+  }
+}, 2000);
+
+</script>
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Players – Zomboid Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+  <div class="p-4 bg-gray-800 flex justify-between items-center shadow-md">
+    <h1 class="text-xl font-bold">👥 Connected Players</h1>
+    <a href="{{ url_for('dashboard') }}" class="text-blue-400 hover:underline">← Back to Dashboard</a>
+  </div>
+
+  <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% if players %}
+      {% for name, info in players.items() %}
+      <div class="bg-gray-800 rounded-xl p-4 shadow hover:ring-2 hover:ring-blue-500 transition-all">
+        <h2 class="text-lg font-semibold mb-1 text-green-400">🧍 {{ name }}</h2>
+        <p class="text-sm text-gray-300">Joined at:</p>
+        <p class="text-sm text-white">{{ info.joined }}</p>
+        <div class="mt-3">
+          <span class="text-xs text-gray-500">Additional player stats coming soon...</span>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="col-span-full text-gray-500 text-center">No players online.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

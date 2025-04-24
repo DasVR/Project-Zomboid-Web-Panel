@@ -1,0 +1,25 @@
+DEBUG: General     , 1744905140721> 134,319,210> LoggerManager.init                  > Initializing...
+LOG  : General     , 1744905140778> 134,319,257> cachedir set to "C:\Users\airfr\Zomboid"
+LOG  : General     , 1744905140867> 134,319,346> version=41.78.16 demo=false
+LOG  : General     , 1744905140868> 134,319,347> revision= date= time=
+LOG  : General     , 1744905140877> 134,319,356> unknown option "0"
+LOG  : General     , 1744905140877> 134,319,357> server name is "servertest"
+LOG  : General     , 1744905140880> 134,319,358> checking server WorldVersion in map_t.bin
+LOG  : General     , 1744905140883> 134,319,362> Loading networking libraries...
+LOG  : General     , 1744905140884> 134,319,363> Loading steam_api64...
+LOG  : General     , 1744905140887> 134,319,365> Loading RakNet64...
+LOG  : General     , 1744905140890> 134,319,369> Loading ZNetJNI64...
+LOG  : Network     , 1744905141010> 134,319,489> [17-04-25 11:52:21.009] > ZNet: SetLogLevel 2
+LOG  : Network     , 1744905141012> 134,319,491> [17-04-25 11:52:21.012] > ZNet: SteamAPI initialised successfully
+LOG  : General     , 1744905141013> 134,319,492> SteamUtils initialised successfully
+LOG  : General     , 1744905150224> 134,328,703> translator: language is EN
+LOG  : General     , 1744905150454> 134,328,933> LightingFPS set to 15
+LOG  : General     , 1744905150483> 134,328,962> reading C:\Users\airfr\Zomboid\Server\servertest.ini
+LOG  : General     , 1744905150498> 134,328,976> writing C:\Users\airfr\Zomboid\Server\servertest.ini
+LOG  : Network     , 1744905150515> 134,328,994> [17-04-25 11:52:30.515] > ZNet: SZombienet -> SZombienet: Init
+LOG  : Network     , 1744905151511> 134,329,991> [17-04-25 11:52:31.511] > ZNet: SteamGameServer seems to be initialized
+LOG  : Network     , 1744905151514> 134,329,993> [17-04-25 11:52:31.514] > ZNet: SZombienet -> SSteamSDK: SetMaxPlayerCount
+LOG  : General     , 1744905151521> 134,330,000> Waiting for response from Steam servers
+LOG  : Network     , 1744905172415> 134,350,894> [17-04-25 11:52:52.415] > ZNet: SSteamSDK -> SZombienet: OnSteamServersConnectFailure
+LOG  : Network     , 1744905172416> 134,350,894> [17-04-25 11:52:52.415] > ZNet: OnSteamServersConnectFailure 3
+LOG  : General     , 1744905172416> 134,350,895> Failed to connect to Steam servers
