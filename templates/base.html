@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Project Zomboid Panel{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html, body {
+      background-color: #1e1e2f;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-900 text-white">
+
+  <header class="bg-gray-800 p-4 shadow-md">
+    <nav class="flex items-center space-x-4 text-lg">
+      <a href="/dashboard" class="hover:text-indigo-400">🏠 Dashboard</a>
+      <a href="/mods-ui" class="hover:text-indigo-400">🧩 Mods</a>
+      <a href="/map" class="hover:text-indigo-400">🗺 Map</a>
+      <a href="/logout" class="hover:text-red-500">🚪 Logout</a>
+    </nav>
+  </header>
+
+  <main class="p-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-gray-800 text-center py-4 mt-10">
+    Project Zomboid Server Panel &copy; {{ 2025 }}
+  </footer>
+</body>
+</html>

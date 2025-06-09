@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col space-y-4">
+
+  <!-- Toolbar -->
+  <div class="flex flex-wrap items-center gap-4">
+    <select id="filter-select" class="p-2 bg-gray-800 text-white rounded">
+      <option value="all">All</option>
+      <option value="enabled">Enabled</option>
+      <option value="disabled">Disabled</option>
+      <option value="favorite">⭐ Favorite</option>
+      <option value="hidden">🙈 Hidden</option>
+    </select>
+
+    <select id="sort-select" class="p-2 bg-gray-800 text-white rounded">
+      <option value="name_asc">Name ↑</option>
+      <option value="name_desc">Name ↓</option>
+      <option value="updated_desc">Updated ↓</option>
+      <option value="updated_asc">Updated ↑</option>
+    </select>
+
+    <input id="search-input" type="text" placeholder="🔎 Search mods..." class="flex-1 p-2 bg-gray-800 text-white rounded" />
+
+    <button id="export-enabled" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded">
+      Export Enabled
+    </button>
+  </div>
+
+  <!-- Panels -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[70vh]">
+
+    <!-- Mod List -->
+    <div id="mod-list" class="overflow-y-auto max-h-[70vh] bg-gray-800 p-2 rounded-lg custom-scroll space-y-1"></div>
+
+    <!-- Mod Details -->
+    <div id="mod-detail" class="col-span-2 hidden flex flex-col gap-4 bg-gray-800 p-4 rounded-lg overflow-y-auto custom-scroll">
+      <div class="flex items-start justify-between">
+        <img id="detail-img" class="w-32 h-32 object-contain rounded border border-gray-700" alt="Preview">
+
+        <div class="ml-4 flex flex-col gap-2">
+          <button id="detail-favorite" class="px-3 py-1 bg-yellow-600 hover:bg-yellow-500 text-white rounded">⭐ Favorite</button>
+          <button id="detail-hide" class="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white rounded">🙈 Hide</button>
+          <button id="detail-download" class="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded">📥 Download Image</button>
+        </div>
+      </div>
+
+      <h2 id="detail-title" class="text-xl font-bold text-white"></h2>
+      <p id="detail-desc" class="text-gray-300 text-sm whitespace-pre-wrap overflow-y-auto max-h-90 p-2 bg-gray-900 rounded"></p>
+      <p id="detail-meta" class="text-xs text-gray-400"></p>
+
+      <div class="flex gap-2">
+        <button id="detail-toggle" class="px-3 py-1 rounded text-white"></button>
+        <a id="detail-workshop" target="_blank" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded">🌐 Workshop</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="flex gap-4 mt-4">
+    <a href="/mods/export.json" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-white">Export JSON</a>
+    <a href="/mods/export.txt" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white">Export TXT</a>
+  </div>
+</div>
+
+<!-- Custom Scrollbars -->
+<style>
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1e1e2e;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+    border-radius: 8px;
+    border: 2px solid #1e1e2e;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+  }
+
+  .custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1e1e2e;
+  }
+</style>
+
+<!-- Link JS -->
+<script src="{{ url_for('static', filename='js/mod_manager.js') }}"></script>
+{% endblock %}
