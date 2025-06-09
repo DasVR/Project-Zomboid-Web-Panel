@@ -1,0 +1,44 @@
+.mod-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+.mod-card.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.mod-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+}
+.hidden {
+  display: none;
+}
+.toggle-btn.enabled {
+  background-color: green;
+  color: white;
+}
+.toggle-btn.disabled {
+  background-color: red;
+  color: white;
+}
+.mod-toast {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  display: none;
+  z-index: 999;
+}
+.mod-toast.visible {
+  display: block;
+}
