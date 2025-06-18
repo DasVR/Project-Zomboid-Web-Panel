@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import time
 import threading
@@ -10,7 +11,9 @@ from flask_openid import OpenID
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 
+from options_loader import load_sandbox_options  # ✅ NEW
 from config_editor import config_bp
+from sandbox_parser import build_combined_sandbox, python_to_lua_table, get_all_sandbox_mod_options, prettify_keys
 from server_control import start_server, stop_server, is_running, attach_socketio, maybe_start_log_stream, server_process
 from logs_parser import tail_log, get_players
 from utils.sysinfo import get_stats
@@ -41,10 +44,64 @@ app.register_blueprint(mod_api)
 def make_session_permanent():
     session.permanent = True
 
+@app.route("/sandbox-editor", methods=["GET", "POST"])
+@require_login
+def sandbox_editor():
+    lua_path = os.getenv("SANDBOX_PATH")
+
+    if request.method == "POST":
+        try:
+            new_data = request.json
+            lua_str = f"SandboxVars = {python_to_lua_table(new_data)}\n\nreturn SandboxVars"
+            with open(lua_path, "w", encoding="utf-8") as f:
+                f.write(lua_str)
+            return jsonify({"status": "✅ Saved SandboxVars!"})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    try:
+        parsed_vars = build_combined_sandbox(
+            lua_path,
+            os.getenv("BASE_SANDBOX_PATH"),
+            os.getenv("MOD_SANDBOX_DIR"),
+        )
+        return render_template("sandbox_editor.html", sandbox=parsed_vars)
+    except Exception as e:
+        return f"Error rendering editor: {e}", 500
+
+
 @app.route("/mods-ui")
 @require_login
 def mods_ui():
     return render_template("mods.html")
+
+@app.route('/api/save-mods', methods=['POST'])
+def save_mods():
+    ini_path = os.getenv('CONFIG_PATH')
+    if not ini_path or not os.path.exists(ini_path):
+        return "❌ INI file not found or path is unset.", 404
+
+    data = request.json or {}
+    mods = data.get('mods', [])
+    workshop_ids = data.get('workshopIds', [])
+
+    try:
+        content = open(ini_path, encoding='utf-8').read()
+
+        mods_str = ';'.join(mods)
+        workshop_str = ';'.join(map(str, workshop_ids))
+
+        # Use ^ to target start-of-line, ensure long lines aren’t wrapped
+        content = re.sub(r'^Mods=.*', f'Mods={mods_str}', content, flags=re.M)
+        content = re.sub(r'^WorkshopItems=.*', f'WorkshopItems={workshop_str}', content, flags=re.M)
+
+        with open(ini_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        return "✅ Mods and WorkshopItems saved!"
+    except Exception as e:
+        app.logger.error("INI save error: %s", e)
+        return "❌ Failed to update INI", 500
 
 @app.route("/link-steam")
 @require_login

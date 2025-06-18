@@ -28,12 +28,13 @@
 <div class="p-4 bg-gray-900 border-b border-gray-700 shadow-md flex justify-between items-center">
   <h1 class="text-2xl font-bold">Project Zomboid Control Panel</h1>
   <div class="flex gap-3">
+    <a href ="{{url_for('mods_ui') }}" class="bg-slate-700 hover:bg-slate-700 text-white font-medium px-4 py-2 rounded transition duration-150">Mods List</a>
     <a href="{{ url_for('players_dashboard') }}" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded transition duration-150">Players</a>
     <a href="{{ url_for('config_page') }}" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded transition duration-150">Config</a>
     <a href="{{ url_for('logs_history') }}" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded transition duration-150">Logs</a>
     <a href="{{ url_for('player_map') }}" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded transition duration-150">Map</a>
     <a href="{{ url_for('logout') }}" class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded transition duration-150">Logout</a>
-    <a href="{{ url_for('link_steam') }}" class="bg-slate-700 hover:bg-slate-600 text-white font-medium px-4 py-2 rounded transition duration-150">Link Steam</a>
+    <a href="{{ url_for('link_steam') }}" class="bg-blue-700 hover:bg-slate-600 text-white font-medium px-4 py-2 rounded transition duration-150">Link Steam</a>
   </div>
 </div>
 

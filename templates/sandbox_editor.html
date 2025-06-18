@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sandbox Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        .category {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 3px rgba(0,0,0,0.2);
+        }
+        .category h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .option {
+            margin-bottom: 15px;
+        }
+        .option label {
+            font-weight: bold;
+        }
+        .option small {
+            display: block;
+            color: #666;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Project Zomboid Sandbox Editor</h1>
+
+<form id="sandboxForm">
+    {% for group, options in sandbox.items() %}
+        <div class="category">
+            <h2>{{ group }}</h2>
+            {% for key, meta in options.items() %}
+                <div class="option">
+                    <label for="{{ key }}">{{ translations.get(key, key) }}</label>
+                    {% if meta["type"] == "bool" %}
+                        <select name="{{ key }}">
+                            <option value="true" {% if current[group][key] == True %}selected{% endif %}>True</option>
+                            <option value="false" {% if current[group][key] == False %}selected{% endif %}>False</option>
+                        </select>
+                    {% else %}
+                        <input type="text" name="{{ key }}" value="{{ current[group][key] }}">
+                    {% endif %}
+                    {% if meta["tooltip"] %}
+                        <small>{{ meta["tooltip"] }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <button type="submit">Save Changes</button>
+</form>
+
+<script>
+document.getElementById("sandboxForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const data = {};
+    const inputs = document.querySelectorAll("input, select");
+    inputs.forEach(input => {
+        data[input.name] = input.value;
+    });
+
+    fetch("/sandbox-editor", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    }).then(res => res.json())
+      .then(data => alert(data.status || data.error));
+});
+</script>
+
+</body>
+</html>

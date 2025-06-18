@@ -12,6 +12,11 @@ from flask import g
 
 load_dotenv()
 
+# Load base directory and log file path from .env
+BASE_DIR = os.getenv("SERVER_BASE_DIR", r"C:\\dedic_pz_serverone")
+BAT_FILE = os.path.join(BASE_DIR, "StartServer64.bat")
+LOG_SRC = os.getenv("LOG_FILE_PATH", r"C:\\Users\\airfr\\Zomboid\\server-console.txt")
+
 server_process = None
 socketio: SocketIO = None
 stream_started = False
@@ -65,6 +70,7 @@ def stream_logs():
             time.sleep(2)
             stop_server()
             archive_current_log()
+            global start_time
             start_time = 0
 
 def maybe_start_log_stream():
@@ -79,24 +85,20 @@ def start_server():
 
     if server_process is None:
         try:
-            base_dir = r"C:\dedic_pz_serverone"
-            bat_file = os.path.join(base_dir, "StartServer64.bat")
+            if not os.path.exists(BAT_FILE):
+                raise FileNotFoundError(f"Missing BAT file at {BAT_FILE}")
 
-            if not os.path.exists(bat_file):
-                raise FileNotFoundError(f"Missing BAT file at {bat_file}")
-
-            command = [bat_file]
-            print("[🧪] Launching using BAT file:", command)
+            print("[🧪] Launching using BAT file:", BAT_FILE)
 
             server_process = subprocess.Popen(
-                command,
+                [BAT_FILE],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 stdin=subprocess.PIPE,
                 text=True,
                 bufsize=1,
                 universal_newlines=True,
-                cwd=base_dir,
+                cwd=BASE_DIR,
                 shell=True
             )
 
@@ -114,7 +116,7 @@ def start_server():
     return False
 
 def stop_server():
-    global server_process
+    global server_process, start_time
 
     if server_process and server_process.poll() is None:
         try:
@@ -122,10 +124,12 @@ def stop_server():
             server_process.stdin.write("quit\n")
             server_process.stdin.flush()
             archive_current_log()
+            server_process.wait()
+            server_process = None
             return True
         except Exception as e:
             print(f"[⚠️] Failed to send quit: {e}. Terminating forcefully.")
-            server_process.terminate()
+            server_process.kill()
             server_process.wait()
             server_process = None
             archive_current_log()
@@ -136,14 +140,12 @@ def stop_server():
     return False
 
 def archive_current_log():
-    log_src = r"C:\Users\airfr\Zomboid\server-console.txt"
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     archive_name = f"logs/log_{timestamp}.txt"
     try:
         os.makedirs("logs", exist_ok=True)
-        shutil.copy(log_src, archive_name)
-        socketio.emit("log_update", {"line": "[🗃️] Log archived to {archive_name}\n"})
-                      
+        shutil.copy(LOG_SRC, archive_name)
+        socketio.emit("log_update", {"line": f"[🗃️] Log archived to {archive_name}\n"})
     except Exception as e:
         print(f"[❌] Failed to archive log: {e}")
 
